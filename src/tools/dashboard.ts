@@ -1,0 +1,160 @@
+import { t } from '../i18n';
+import { renderDisclaimerBanner } from '../app';
+import { getOPTSetup, getEmploymentPeriods, getReportingState } from '../utils/storage';
+import { daysBetween, today } from '../utils/dates';
+import { UNEMPLOYMENT_LIMIT_STANDARD, UNEMPLOYMENT_LIMIT_STEM, THRESHOLD_SAFE, THRESHOLD_WARN } from '../data/rules';
+
+function calculateUnemploymentDays(): { used: number; limit: number; remaining: number } | null {
+  const setup = getOPTSetup();
+  if (!setup) return null;
+
+  const eadStart = new Date(setup.eadStart + 'T00:00:00');
+  const eadEnd = new Date(setup.eadEnd + 'T00:00:00');
+  const now = today();
+  const effectiveEnd = now < eadEnd ? now : eadEnd;
+
+  if (now < eadStart) return null;
+
+  const totalDays = daysBetween(eadStart, effectiveEnd);
+  const periods = getEmploymentPeriods();
+
+  let employedDays = 0;
+  for (const p of periods) {
+    if (p.hoursPerWeek < 20 || !p.relatedToField) continue;
+    const pStart = new Date(p.startDate + 'T00:00:00');
+    const pEnd = p.endDate ? new Date(p.endDate + 'T00:00:00') : now;
+    const overlapStart = pStart < eadStart ? eadStart : pStart;
+    const overlapEnd = pEnd > effectiveEnd ? effectiveEnd : pEnd;
+    if (overlapStart <= overlapEnd) {
+      employedDays += daysBetween(overlapStart, overlapEnd);
+    }
+  }
+
+  const limit = setup.optType === 'stem' ? UNEMPLOYMENT_LIMIT_STEM : UNEMPLOYMENT_LIMIT_STANDARD;
+  const used = Math.max(0, totalDays - employedDays);
+  const remaining = Math.max(0, limit - used);
+
+  return { used, limit, remaining };
+}
+
+function getStatusClass(used: number, limit: number): string {
+  const ratio = used / limit;
+  if (ratio <= THRESHOLD_SAFE) return 'safe';
+  if (ratio <= THRESHOLD_WARN) return 'warn';
+  return 'critical';
+}
+
+function renderProgressRing(used: number, limit: number, size: number = 80): string {
+  const radius = (size - 8) / 2;
+  const circumference = 2 * Math.PI * radius;
+  const ratio = Math.min(used / limit, 1);
+  const offset = circumference * (1 - ratio);
+  const status = getStatusClass(used, limit);
+  const color = status === 'safe' ? 'var(--color-status-safe)' : status === 'warn' ? 'var(--color-status-warn)' : 'var(--color-status-critical)';
+
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="transform:rotate(-90deg)">
+    <circle cx="${size/2}" cy="${size/2}" r="${radius}" fill="none" stroke="var(--color-border)" stroke-width="6"/>
+    <circle cx="${size/2}" cy="${size/2}" r="${radius}" fill="none" stroke="${color}" stroke-width="6" stroke-linecap="round" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}" style="transition:stroke-dashoffset 500ms ease-out"/>
+  </svg>`;
+}
+
+interface CardInfo {
+  route: string;
+  titleKey: string;
+  descKey: string;
+  icon: string;
+  statusHtml?: string;
+}
+
+export function renderDashboard(container: HTMLElement): void {
+  const unemployment = calculateUnemploymentDays();
+  const reportState = getReportingState();
+  const totalReportItems = reportState.optType === 'stem' ? 10 : 6;
+  const checkedCount = reportState.checkedItems.length;
+
+  // Unemployment hero card
+  let heroHtml: string;
+  if (unemployment) {
+    const status = getStatusClass(unemployment.used, unemployment.limit);
+    heroHtml = `
+      <a href="#unemployment" class="card status-border-${status}" style="grid-column:span 2;display:flex;align-items:center;gap:24px;cursor:pointer;text-decoration:none;color:inherit;">
+        <div style="flex-shrink:0;">
+          ${renderProgressRing(unemployment.used, unemployment.limit, 96)}
+        </div>
+        <div>
+          <div style="font-size:var(--text-countdown);font-weight:700;line-height:1;color:var(--color-status-${status});" class="tabular-nums">${unemployment.remaining}</div>
+          <div style="font-size:var(--text-label);color:var(--color-text-secondary);margin-top:4px;">${t('unemployment.daysRemaining')}</div>
+          <div style="font-size:var(--text-mono);color:var(--color-text-tertiary);margin-top:2px;font-family:var(--font-mono);" class="tabular-nums">${unemployment.used} ${t('dashboard.daysUsed')} ${t('dashboard.of')} ${unemployment.limit}</div>
+        </div>
+      </a>
+    `;
+  } else {
+    heroHtml = `
+      <a href="#unemployment" class="card status-border-neutral" style="grid-column:span 2;cursor:pointer;text-decoration:none;color:inherit;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-tertiary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          <span style="font-size:var(--text-section);font-weight:600;">${t('card.unemployment.title')}</span>
+        </div>
+        <p style="color:var(--color-text-secondary);margin-bottom:12px;">${t('dashboard.setupDesc')}</p>
+        <span class="btn-primary" style="display:inline-flex;">${t('dashboard.setupCta')}</span>
+      </a>
+    `;
+  }
+
+  // Tool cards
+  const cards: CardInfo[] = [
+    { route: 'stem-check', titleKey: 'card.stemCheck.title', descKey: 'card.stemCheck.desc', icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c3 3 9 3 12 0v-5"/></svg>' },
+    { route: 'everify', titleKey: 'card.everify.title', descKey: 'card.everify.desc', icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z"/><path d="M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2"/><path d="M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2"/></svg>' },
+    { route: 'timeline', titleKey: 'card.timeline.title', descKey: 'card.timeline.desc', icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>' },
+    { route: 'status-wizard', titleKey: 'card.statusWizard.title', descKey: 'card.statusWizard.desc', icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z"/><path d="m9 12 2 2 4-4"/></svg>' },
+    { route: 'reporting', titleKey: 'card.reporting.title', descKey: 'card.reporting.desc', icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="6" height="6" rx="1"/><path d="m3 17 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg>', statusHtml: checkedCount > 0 ? `<span class="status-pill status-pill-${checkedCount >= totalReportItems ? 'safe' : 'warn'}">${t('reporting.completedOf', { done: checkedCount, total: totalReportItems })}</span>` : undefined },
+    { route: 'i983', titleKey: 'card.i983.title', descKey: 'card.i983.desc', icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>' },
+    { route: 'calendar', titleKey: 'card.calendar.title', descKey: 'card.calendar.desc', icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M10 14h4"/><path d="M12 12v4"/></svg>' },
+    { route: '#', titleKey: 'card.resources.title', descKey: 'card.resources.desc', icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' },
+    { route: '#', titleKey: 'card.privacy.title', descKey: 'card.privacy.desc', icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>' },
+    { route: '#', titleKey: 'card.about.title', descKey: 'card.about.desc', icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>' },
+  ];
+
+  const cardsHtml = cards.map(c => `
+    <a href="#${c.route}" class="card status-border-neutral" style="cursor:pointer;text-decoration:none;color:inherit;display:flex;flex-direction:column;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <span style="color:var(--color-text-tertiary);">${c.icon}</span>
+        <span style="font-size:var(--text-label);font-weight:600;">${t(c.titleKey)}</span>
+      </div>
+      <p style="font-size:0.875rem;color:var(--color-text-secondary);line-height:1.5;flex:1;">${t(c.descKey)}</p>
+      ${c.statusHtml ? `<div style="margin-top:8px;">${c.statusHtml}</div>` : ''}
+    </a>
+  `).join('');
+
+  container.innerHTML = `
+    <div style="margin-bottom:24px;">
+      <h1 style="font-size:var(--text-page-title);font-weight:700;">${t('dashboard.title')}</h1>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
+      ${heroHtml}
+      ${cardsHtml}
+    </div>
+  `;
+
+  // Add responsive grid classes via media query adjustments
+  const grid = container.querySelector('div[style*="grid-template-columns"]') as HTMLElement;
+  if (grid) {
+    const updateGrid = () => {
+      const w = window.innerWidth;
+      if (w >= 1024) {
+        grid.style.gridTemplateColumns = 'repeat(4, 1fr)';
+        grid.style.gap = '20px';
+      } else if (w >= 640) {
+        grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+        grid.style.gap = '16px';
+      } else {
+        grid.style.gridTemplateColumns = 'repeat(2, 1fr)';
+        grid.style.gap = '16px';
+      }
+    };
+    updateGrid();
+    window.addEventListener('resize', updateGrid);
+  }
+
+  renderDisclaimerBanner(container);
+}

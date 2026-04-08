@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GongYi 工易 — OPT Work Authorization Tracker</title>
+  <meta name="description" content="Free bilingual work authorization tracker for F-1 international students on OPT. Track unemployment days, check STEM eligibility, manage reporting deadlines.">
+  <meta property="og:title" content="GongYi 工易 — OPT Work Authorization Tracker">
+  <meta property="og:description" content="Free bilingual tracker for F-1 OPT students. Count unemployment days, check STEM eligibility, track deadlines.">
+  <meta property="og:type" content="website">
+  <meta name="theme-color" content="#2563EB">
+  <link rel="manifest" href="/manifest.json">
+  <link rel="icon" type="image/png" sizes="192x192" href="/assets/icons/icon-192.png">
+  <link rel="apple-touch-icon" href="/assets/icons/icon-192.png">
+  <link rel="stylesheet" href="/styles/tailwind.css">
+</head>
+<body class="min-h-screen">
+  <div id="app">
+    <!-- Top nav bar -->
+    <header id="top-nav" class="sticky top-0 z-50" style="background:var(--color-surface);border-bottom:1px solid var(--color-border);">
+      <div class="max-w-[1120px] mx-auto flex items-center justify-between" style="padding:12px 24px;">
+        <a href="#dashboard" class="flex items-center gap-2 no-underline" style="color:var(--color-text-primary);font-weight:700;font-size:1.125rem;">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+          <span>GongYi <span style="font-weight:400;">工易</span></span>
+        </a>
+        <div class="flex items-center gap-2">
+          <button id="lang-toggle" class="nav-pill" aria-label="Switch language" style="padding:6px 12px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
+            <span id="lang-label">中文</span>
+          </button>
+          <button id="dark-toggle" class="nav-pill" aria-label="Toggle dark mode" style="padding:6px 12px;">
+            <svg id="dark-icon-moon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>
+            <svg id="dark-icon-sun" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- Pill tab navigation -->
+    <nav id="tool-nav" style="background:var(--color-surface);border-bottom:1px solid var(--color-border);">
+      <div class="max-w-[1120px] mx-auto nav-scroll" style="padding:8px 24px;">
+        <div class="flex items-center gap-2" id="nav-pills"></div>
+      </div>
+    </nav>
+
+    <!-- Main content area -->
+    <main id="content" class="max-w-[1120px] mx-auto" style="padding:24px;">
+    </main>
+  </div>
+
+  <script type="module" src="/app.js"></script>
+</body>
+</html>
