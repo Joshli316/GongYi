@@ -283,7 +283,11 @@ export const strings: Strings = {
   'about.source': { en: 'Data sources: DHS STEM Designated Degree Program List (July 2024), 8 CFR 214.2(f), USCIS Policy Manual.', zh: '数据来源：DHS STEM指定学位项目清单（2024年7月）、8 CFR 214.2(f)、USCIS政策手册。' },
 };
 
-let currentLang: Lang = (localStorage.getItem('gongyi-lang') as Lang) || 'en';
+function getSavedLang(): Lang {
+  try { return (localStorage.getItem('gongyi-lang') as Lang) || 'en'; }
+  catch { return 'en'; }
+}
+let currentLang: Lang = getSavedLang();
 
 export function t(key: string, params?: Record<string, string | number>): string {
   const entry = strings[key];

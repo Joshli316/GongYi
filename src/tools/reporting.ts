@@ -74,7 +74,7 @@ export function renderReporting(container: HTMLElement): void {
       <p style="color:var(--color-text-secondary);margin-bottom:16px;">${t('reporting.intro')}</p>
 
       <!-- Dual reporting reminder -->
-      <div style="background:var(--color-status-warn-bg);border:1px solid var(--color-status-warn);border-radius:var(--radius-card);padding:12px 16px;margin-bottom:24px;">
+      <div role="alert" style="background:var(--color-status-warn-bg);border:1px solid var(--color-status-warn);border-radius:var(--radius-card);padding:12px 16px;margin-bottom:24px;">
         <p style="font-size:0.875rem;color:var(--color-status-warn);font-weight:600;">${t('reporting.dualReminder')}</p>
         <a href="${LINK_SEVP_PORTAL}" target="_blank" rel="noopener noreferrer" style="font-size:0.75rem;color:var(--color-primary);">SEVP Portal &rarr;</a>
       </div>

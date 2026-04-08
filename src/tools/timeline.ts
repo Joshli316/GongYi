@@ -1,7 +1,7 @@
 import { t } from '../i18n';
 import { renderDisclaimerBanner } from '../app';
 import { getTimelineSetup, saveTimelineSetup, type TimelineSetup } from '../utils/storage';
-import { daysBetween, addDays, formatDate, today } from '../utils/dates';
+import { daysBetween, addDays, formatDate, today, flashInvalid } from '../utils/dates';
 import { OPT_APPLICATION_BEFORE_PROGRAM_END, OPT_APPLICATION_AFTER_PROGRAM_END, STEM_EXTENSION_BEFORE_OPT_END, GRACE_PERIOD_DAYS, VALIDATION_REPORT_MONTHS, I983_EVAL_12_MONTHS, I983_EVAL_24_MONTHS, CAP_GAP_MONTH, CAP_GAP_DAY, DEADLINE_WARN_DAYS, DEADLINE_CRITICAL_DAYS } from '../data/rules';
 
 interface TimelineEvent {
@@ -86,16 +86,16 @@ export function renderTimeline(container: HTMLElement): void {
       <div style="display:flex;flex-direction:column;gap:12px;">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">
           <div>
-            <label style="font-size:var(--text-label);color:var(--color-text-secondary);display:block;margin-bottom:4px;">${t('timeline.programEnd')}</label>
+            <label for="tl-program-end" style="font-size:var(--text-label);color:var(--color-text-secondary);display:block;margin-bottom:4px;">${t('timeline.programEnd')}</label>
             <input type="date" id="tl-program-end" class="form-input" value="${setup?.programEnd || ''}">
           </div>
           <div>
-            <label style="font-size:var(--text-label);color:var(--color-text-secondary);display:block;margin-bottom:4px;">${t('timeline.optStart')}</label>
+            <label for="tl-opt-start" style="font-size:var(--text-label);color:var(--color-text-secondary);display:block;margin-bottom:4px;">${t('timeline.optStart')}</label>
             <input type="date" id="tl-opt-start" class="form-input" value="${setup?.optStart || ''}">
           </div>
         </div>
         <div>
-          <label style="font-size:var(--text-label);color:var(--color-text-secondary);display:block;margin-bottom:4px;">${t('timeline.optType')}</label>
+          <label for="tl-opt-type" style="font-size:var(--text-label);color:var(--color-text-secondary);display:block;margin-bottom:4px;">${t('timeline.optType')}</label>
           <select id="tl-opt-type" class="form-input">
             <option value="standard" ${setup?.optType !== 'stem' ? 'selected' : ''}>${t('unemployment.standard')}</option>
             <option value="stem" ${setup?.optType === 'stem' ? 'selected' : ''}>${t('unemployment.stem')}</option>
@@ -137,9 +137,11 @@ export function renderTimeline(container: HTMLElement): void {
 
   // Calculate
   document.getElementById('tl-calc')!.addEventListener('click', () => {
-    const programEnd = (document.getElementById('tl-program-end') as HTMLInputElement).value;
-    const optStart = (document.getElementById('tl-opt-start') as HTMLInputElement).value;
-    if (!programEnd || !optStart) return;
+    const programEndEl = document.getElementById('tl-program-end') as HTMLInputElement;
+    const optStartEl = document.getElementById('tl-opt-start') as HTMLInputElement;
+    if (!flashInvalid(programEndEl, optStartEl)) return;
+    const programEnd = programEndEl.value;
+    const optStart = optStartEl.value;
 
     const newSetup: TimelineSetup = {
       programEnd,

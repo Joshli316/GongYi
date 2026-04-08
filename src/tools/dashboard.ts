@@ -1,62 +1,7 @@
 import { t } from '../i18n';
 import { renderDisclaimerBanner } from '../app';
-import { getOPTSetup, getEmploymentPeriods, getReportingState } from '../utils/storage';
-import { daysBetween, today } from '../utils/dates';
-import { UNEMPLOYMENT_LIMIT_STANDARD, UNEMPLOYMENT_LIMIT_STEM, THRESHOLD_SAFE, THRESHOLD_WARN } from '../data/rules';
-
-function calculateUnemploymentDays(): { used: number; limit: number; remaining: number } | null {
-  const setup = getOPTSetup();
-  if (!setup) return null;
-
-  const eadStart = new Date(setup.eadStart + 'T00:00:00');
-  const eadEnd = new Date(setup.eadEnd + 'T00:00:00');
-  const now = today();
-  const effectiveEnd = now < eadEnd ? now : eadEnd;
-
-  if (now < eadStart) return null;
-
-  const totalDays = daysBetween(eadStart, effectiveEnd);
-  const periods = getEmploymentPeriods();
-
-  let employedDays = 0;
-  for (const p of periods) {
-    if (p.hoursPerWeek < 20 || !p.relatedToField) continue;
-    const pStart = new Date(p.startDate + 'T00:00:00');
-    const pEnd = p.endDate ? new Date(p.endDate + 'T00:00:00') : now;
-    const overlapStart = pStart < eadStart ? eadStart : pStart;
-    const overlapEnd = pEnd > effectiveEnd ? effectiveEnd : pEnd;
-    if (overlapStart <= overlapEnd) {
-      employedDays += daysBetween(overlapStart, overlapEnd);
-    }
-  }
-
-  const limit = setup.optType === 'stem' ? UNEMPLOYMENT_LIMIT_STEM : UNEMPLOYMENT_LIMIT_STANDARD;
-  const used = Math.max(0, totalDays - employedDays);
-  const remaining = Math.max(0, limit - used);
-
-  return { used, limit, remaining };
-}
-
-function getStatusClass(used: number, limit: number): string {
-  const ratio = used / limit;
-  if (ratio <= THRESHOLD_SAFE) return 'safe';
-  if (ratio <= THRESHOLD_WARN) return 'warn';
-  return 'critical';
-}
-
-function renderProgressRing(used: number, limit: number, size: number = 80): string {
-  const radius = (size - 8) / 2;
-  const circumference = 2 * Math.PI * radius;
-  const ratio = Math.min(used / limit, 1);
-  const offset = circumference * (1 - ratio);
-  const status = getStatusClass(used, limit);
-  const color = status === 'safe' ? 'var(--color-status-safe)' : status === 'warn' ? 'var(--color-status-warn)' : 'var(--color-status-critical)';
-
-  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="transform:rotate(-90deg)">
-    <circle cx="${size/2}" cy="${size/2}" r="${radius}" fill="none" stroke="var(--color-border)" stroke-width="6"/>
-    <circle cx="${size/2}" cy="${size/2}" r="${radius}" fill="none" stroke="${color}" stroke-width="6" stroke-linecap="round" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}" style="transition:stroke-dashoffset 500ms ease-out"/>
-  </svg>`;
-}
+import { getReportingState } from '../utils/storage';
+import { calculateFromStorage, getStatusClass, renderProgressRing } from '../utils/unemployment-calc';
 
 interface CardInfo {
   route: string;
@@ -67,7 +12,7 @@ interface CardInfo {
 }
 
 export function renderDashboard(container: HTMLElement): void {
-  const unemployment = calculateUnemploymentDays();
+  const unemployment = calculateFromStorage();
   const reportState = getReportingState();
   const totalReportItems = reportState.optType === 'stem' ? 10 : 6;
   const checkedCount = reportState.checkedItems.length;
@@ -136,7 +81,7 @@ export function renderDashboard(container: HTMLElement): void {
     </div>
   `;
 
-  // Add responsive grid classes via media query adjustments
+  // Responsive grid via media query adjustments
   const grid = container.querySelector('div[style*="grid-template-columns"]') as HTMLElement;
   if (grid) {
     const updateGrid = () => {
@@ -153,6 +98,11 @@ export function renderDashboard(container: HTMLElement): void {
       }
     };
     updateGrid();
+    // Clean up previous listener if any, then attach
+    if ((window as any).__gongyi_resize) {
+      window.removeEventListener('resize', (window as any).__gongyi_resize);
+    }
+    (window as any).__gongyi_resize = updateGrid;
     window.addEventListener('resize', updateGrid);
   }
 

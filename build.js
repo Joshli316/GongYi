@@ -33,9 +33,12 @@ async function build() {
     copyDir('assets', path.join('dist', 'assets'));
   }
 
-  // Copy service worker
+  // Copy service worker with build-stamped cache name
   if (fs.existsSync('sw.js')) {
-    fs.copyFileSync('sw.js', path.join('dist', 'sw.js'));
+    const swContent = fs.readFileSync('sw.js', 'utf8');
+    const buildHash = Date.now().toString(36);
+    const stamped = swContent.replace(/const CACHE_NAME = '[^']+';/, `const CACHE_NAME = 'gongyi-${buildHash}';`);
+    fs.writeFileSync(path.join('dist', 'sw.js'), stamped);
   }
 
   console.log('Build complete!');

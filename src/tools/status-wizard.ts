@@ -129,7 +129,7 @@ export function renderStatusWizard(container: HTMLElement): void {
         <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"/></svg>
         ${t('common.back')}
       </a>
-      <div class="card status-border-${statusClass}" style="margin-bottom:24px;">
+      <div class="card status-border-${statusClass}" role="alert" style="margin-bottom:24px;">
         <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
           <span class="status-pill status-pill-${statusClass}">${t(titleKey)}</span>
         </div>

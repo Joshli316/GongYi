@@ -1,4 +1,4 @@
-import { t, getLang, setLang, toggleLang } from './i18n';
+import { t, setLang, toggleLang } from './i18n';
 import { renderDashboard } from './tools/dashboard';
 import { renderUnemployment } from './tools/unemployment';
 import { renderStemCheck } from './tools/stem-check';
@@ -51,8 +51,8 @@ function renderNav(): void {
   if (!pills) return;
   const currentRoute = getRoute();
   pills.innerHTML = navItems.map(item => `
-    <a href="#${item.route}" class="nav-pill${item.route === currentRoute ? ' active' : ''}" data-route="${item.route}">
-      ${item.icon}
+    <a href="#${item.route}" class="nav-pill${item.route === currentRoute ? ' active' : ''}" data-route="${item.route}" aria-current="${item.route === currentRoute ? 'page' : 'false'}">
+      <span aria-hidden="true">${item.icon}</span>
       <span>${t(item.labelKey)}</span>
     </a>
   `).join('');

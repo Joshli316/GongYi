@@ -96,6 +96,17 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+/* Validation flash */
+.form-input.invalid {
+  border-color: var(--color-status-critical);
+  animation: shake 300ms ease-out;
+}
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+}
+
 /* Tabular numbers for counters */
 .tabular-nums {
   font-variant-numeric: tabular-nums;

@@ -54,3 +54,21 @@ export function clampDate(date: Date, min: Date, max: Date): Date {
   if (date > max) return max;
   return date;
 }
+
+export function flashInvalid(...inputs: HTMLInputElement[]): boolean {
+  let allValid = true;
+  for (const input of inputs) {
+    if (!input.value) {
+      allValid = false;
+      input.classList.add('invalid');
+      setTimeout(() => input.classList.remove('invalid'), 600);
+    }
+  }
+  return allValid;
+}
+
+export function escapeHtml(str: string): string {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
