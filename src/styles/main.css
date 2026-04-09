@@ -2,13 +2,13 @@
 
 @theme {
   /* Background & Surface */
-  --color-bg: #F8FAFC;
+  --color-bg: #FAFAF9;
   --color-surface: #FFFFFF;
-  --color-surface-alt: #F1F5F9;
+  --color-surface-alt: #F5F5F4;
 
   /* Borders */
-  --color-border: #E2E8F0;
-  --color-border-strong: #CBD5E1;
+  --color-border: #E7E5E4;
+  --color-border-strong: #D6D3D1;
 
   /* Text */
   --color-text-primary: #0F172A;
@@ -305,6 +305,8 @@ body {
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  -webkit-mask-image: linear-gradient(to right, black calc(100% - 40px), transparent 100%);
+  mask-image: linear-gradient(to right, black calc(100% - 40px), transparent 100%);
 }
 .nav-scroll::-webkit-scrollbar {
   display: none;

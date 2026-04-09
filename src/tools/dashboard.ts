@@ -36,13 +36,15 @@ export function renderDashboard(container: HTMLElement): void {
     `;
   } else {
     heroHtml = `
-      <a href="#unemployment" class="card status-border-neutral" style="grid-column:span 2;cursor:pointer;text-decoration:none;color:inherit;">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:8px;">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="var(--color-text-tertiary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+      <a href="#unemployment" class="card" style="grid-column:span 2;cursor:pointer;text-decoration:none;color:inherit;background:var(--color-primary-bg);border-color:var(--color-primary);border-width:1px;">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <div style="width:40px;height:40px;border-radius:10px;background:var(--color-primary);display:flex;align-items:center;justify-content:center;">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+          </div>
           <span style="font-size:var(--text-section);font-weight:600;">${t('card.unemployment.title')}</span>
         </div>
-        <p style="color:var(--color-text-secondary);margin-bottom:12px;">${t('dashboard.setupDesc')}</p>
-        <span class="btn-primary" style="display:inline-flex;">${t('dashboard.setupCta')}</span>
+        <p style="color:var(--color-text-secondary);margin-bottom:16px;">${t('dashboard.setupDesc')}</p>
+        <span class="btn-primary" style="display:inline-flex;padding:12px 24px;">${t('dashboard.setupCta')}</span>
       </a>
     `;
   }
@@ -58,14 +60,16 @@ export function renderDashboard(container: HTMLElement): void {
     { route: 'calendar', titleKey: 'card.calendar.title', descKey: 'card.calendar.desc', icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M10 14h4"/><path d="M12 12v4"/></svg>' },
   ];
 
-  // Special cards rendered separately (not linked)
+  // Reference cards — lighter treatment, no card border
+  const refStyle = 'background:var(--color-surface-alt);border-radius:var(--radius-card);padding:16px;display:flex;flex-direction:column;';
+
   const resourcesHtml = `
-    <div class="card status-border-neutral" style="display:flex;flex-direction:column;">
+    <div style="${refStyle}">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-        <span style="color:var(--color-text-tertiary);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
-        <span style="font-size:var(--text-label);font-weight:600;">${t('card.resources.title')}</span>
+        <span style="color:var(--color-text-tertiary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+        <span style="font-size:var(--text-label);font-weight:600;color:var(--color-text-secondary);">${t('card.resources.title')}</span>
       </div>
-      <div style="display:flex;flex-direction:column;gap:6px;flex:1;">
+      <div style="display:flex;flex-direction:column;gap:4px;flex:1;">
         <a href="${LINK_USCIS_OPT}" target="_blank" rel="noopener noreferrer" style="font-size:0.8125rem;color:var(--color-primary);">${t('resources.uscis')} &rarr;</a>
         <a href="${LINK_SEVP_PORTAL}" target="_blank" rel="noopener noreferrer" style="font-size:0.8125rem;color:var(--color-primary);">${t('resources.sevpPortal')} &rarr;</a>
         <a href="${LINK_STEM_LIST_PDF}" target="_blank" rel="noopener noreferrer" style="font-size:0.8125rem;color:var(--color-primary);">${t('resources.stemList')} &rarr;</a>
@@ -75,32 +79,32 @@ export function renderDashboard(container: HTMLElement): void {
     </div>`;
 
   const privacyHtml = `
-    <div class="card status-border-neutral" style="display:flex;flex-direction:column;">
+    <div style="${refStyle}">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-        <span style="color:var(--color-text-tertiary);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
-        <span style="font-size:var(--text-label);font-weight:600;">${t('card.privacy.title')}</span>
+        <span style="color:var(--color-text-tertiary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+        <span style="font-size:var(--text-label);font-weight:600;color:var(--color-text-secondary);">${t('card.privacy.title')}</span>
       </div>
-      <p style="font-size:0.875rem;color:var(--color-text-secondary);line-height:1.5;flex:1;">${t('card.privacy.desc')}</p>
-      <button id="clear-data-btn" class="btn-secondary" style="margin-top:8px;font-size:0.8125rem;min-height:36px;padding:6px 12px;align-self:flex-start;">${t('privacy.clearData')}</button>
+      <p style="font-size:0.8125rem;color:var(--color-text-tertiary);line-height:1.5;flex:1;">${t('card.privacy.desc')}</p>
+      <button id="clear-data-btn" style="margin-top:8px;font-size:0.75rem;min-height:32px;padding:4px 10px;align-self:flex-start;background:none;border:1px solid var(--color-border);border-radius:var(--radius-btn);color:var(--color-text-tertiary);cursor:pointer;">${t('privacy.clearData')}</button>
     </div>`;
 
   const aboutHtml = `
-    <div class="card status-border-neutral" style="display:flex;flex-direction:column;">
+    <div style="${refStyle}">
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-        <span style="color:var(--color-text-tertiary);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></span>
-        <span style="font-size:var(--text-label);font-weight:600;">${t('card.about.title')}</span>
+        <span style="color:var(--color-text-tertiary);"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></span>
+        <span style="font-size:var(--text-label);font-weight:600;color:var(--color-text-secondary);">${t('card.about.title')}</span>
       </div>
-      <p style="font-size:0.875rem;color:var(--color-text-secondary);line-height:1.5;flex:1;">${t('about.description')}</p>
-      <p style="font-size:0.75rem;color:var(--color-text-tertiary);margin-top:4px;">${t('about.source')}</p>
+      <p style="font-size:0.8125rem;color:var(--color-text-tertiary);line-height:1.5;flex:1;">${t('about.description')}</p>
+      <p style="font-size:0.6875rem;color:var(--color-text-tertiary);margin-top:4px;">${t('about.source')}</p>
     </div>`;
 
   const cardsHtml = cards.map(c => `
-    <a href="#${c.route}" class="card status-border-neutral" style="cursor:pointer;text-decoration:none;color:inherit;display:flex;flex-direction:column;">
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
-        <span style="color:var(--color-text-tertiary);">${c.icon}</span>
-        <span style="font-size:var(--text-label);font-weight:600;">${t(c.titleKey)}</span>
+    <a href="#${c.route}" class="card" style="cursor:pointer;text-decoration:none;color:inherit;display:flex;flex-direction:column;">
+      <div style="width:36px;height:36px;border-radius:8px;background:var(--color-surface-alt);display:flex;align-items:center;justify-content:center;margin-bottom:12px;color:var(--color-text-secondary);">
+        ${c.icon}
       </div>
-      <p style="font-size:0.875rem;color:var(--color-text-secondary);line-height:1.5;flex:1;">${t(c.descKey)}</p>
+      <span style="font-size:var(--text-label);font-weight:600;margin-bottom:4px;">${t(c.titleKey)}</span>
+      <p style="font-size:0.8125rem;color:var(--color-text-secondary);line-height:1.5;flex:1;">${t(c.descKey)}</p>
       ${c.statusHtml ? `<div style="margin-top:8px;">${c.statusHtml}</div>` : ''}
     </a>`).join('');
 
@@ -108,12 +112,17 @@ export function renderDashboard(container: HTMLElement): void {
     <div style="margin-bottom:24px;">
       <h1 style="font-size:var(--text-page-title);font-weight:700;">${t('dashboard.title')}</h1>
     </div>
-    <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
+    <div id="tools-grid" style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
       ${heroHtml}
       ${cardsHtml}
-      ${resourcesHtml}
-      ${privacyHtml}
-      ${aboutHtml}
+    </div>
+    <div style="margin-top:32px;">
+      <h2 style="font-size:var(--text-label);font-weight:600;color:var(--color-text-tertiary);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:12px;">${t('dashboard.reference')}</h2>
+      <div id="ref-grid" style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;">
+        ${resourcesHtml}
+        ${privacyHtml}
+        ${aboutHtml}
+      </div>
     </div>
   `;
 
@@ -126,30 +135,34 @@ export function renderDashboard(container: HTMLElement): void {
     }
   });
 
-  // Responsive grid via media query adjustments
-  const grid = container.querySelector('div[style*="grid-template-columns"]') as HTMLElement;
-  if (grid) {
-    const updateGrid = () => {
-      const w = window.innerWidth;
-      if (w >= 1024) {
-        grid.style.gridTemplateColumns = 'repeat(4, 1fr)';
-        grid.style.gap = '20px';
-      } else if (w >= 640) {
-        grid.style.gridTemplateColumns = 'repeat(3, 1fr)';
-        grid.style.gap = '16px';
-      } else {
-        grid.style.gridTemplateColumns = 'repeat(2, 1fr)';
-        grid.style.gap = '16px';
-      }
-    };
-    updateGrid();
-    // Clean up previous listener if any, then attach
-    if ((window as any).__gongyi_resize) {
-      window.removeEventListener('resize', (window as any).__gongyi_resize);
+  // Responsive grid
+  const toolsGrid = document.getElementById('tools-grid') as HTMLElement;
+  const refGrid = document.getElementById('ref-grid') as HTMLElement;
+  const updateGrid = () => {
+    const w = window.innerWidth;
+    if (w >= 1024) {
+      toolsGrid.style.gridTemplateColumns = 'repeat(4, 1fr)';
+      toolsGrid.style.gap = '20px';
+      refGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+      refGrid.style.gap = '20px';
+    } else if (w >= 640) {
+      toolsGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+      toolsGrid.style.gap = '16px';
+      refGrid.style.gridTemplateColumns = 'repeat(3, 1fr)';
+      refGrid.style.gap = '16px';
+    } else {
+      toolsGrid.style.gridTemplateColumns = 'repeat(2, 1fr)';
+      toolsGrid.style.gap = '16px';
+      refGrid.style.gridTemplateColumns = '1fr';
+      refGrid.style.gap = '12px';
     }
-    (window as any).__gongyi_resize = updateGrid;
-    window.addEventListener('resize', updateGrid);
+  };
+  updateGrid();
+  if ((window as any).__gongyi_resize) {
+    window.removeEventListener('resize', (window as any).__gongyi_resize);
   }
+  (window as any).__gongyi_resize = updateGrid;
+  window.addEventListener('resize', updateGrid);
 
   renderDisclaimerBanner(container);
 }

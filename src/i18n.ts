@@ -31,6 +31,8 @@ export const strings: Strings = {
   'dashboard.daysRemaining': { en: 'days remaining', zh: '天剩余' },
   'dashboard.daysUsed': { en: 'days used', zh: '天已用' },
   'dashboard.of': { en: 'of', zh: '/' },
+  'dashboard.tools': { en: 'Tools', zh: '工具' },
+  'dashboard.reference': { en: 'Quick Reference', zh: '快速参考' },
 
   // Dashboard cards
   'card.unemployment.title': { en: 'Unemployment Counter', zh: '失业天数计算' },
