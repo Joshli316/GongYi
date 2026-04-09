@@ -278,9 +278,34 @@ export const strings: Strings = {
 
   // About
   'about.title': { en: 'About GongYi 工易', zh: '关于GongYi 工易' },
-  'about.description': { en: 'GongYi 工易 ("Work Made Easy") is a free, bilingual, client-side work authorization tracker for F-1 international students on OPT.', zh: 'GongYi 工易是一个免费的、双语的、客户端工作许可追踪工具，专为F-1国际学生的OPT设计。' },
+  'about.description': { en: 'GongYi 工易 ("Work Made Easy") is a free, bilingual work authorization tracker for F-1 international students on OPT. All data stays in your browser.', zh: 'GongYi 工易是一个免费的双语工作许可追踪工具，专为F-1国际学生的OPT设计。所有数据保存在浏览器中。' },
   'about.privacy': { en: 'All your data stays in your browser. No accounts, no servers, no tracking.', zh: '你所有的数据都保存在浏览器中。没有账户、没有服务器、没有跟踪。' },
   'about.source': { en: 'Data sources: DHS STEM Designated Degree Program List (July 2024), 8 CFR 214.2(f), USCIS Policy Manual.', zh: '数据来源：DHS STEM指定学位项目清单（2024年7月）、8 CFR 214.2(f)、USCIS政策手册。' },
+
+  // Error boundary
+  'error.render': { en: 'Something went wrong loading this page.', zh: '加载此页面时出错。' },
+  'error.goHome': { en: 'Go to Dashboard', zh: '前往控制台' },
+
+  // Resources
+  'resources.uscis': { en: 'USCIS OPT Information', zh: 'USCIS OPT信息' },
+  'resources.sevpPortal': { en: 'SEVP Portal (Student)', zh: 'SEVP门户（学生）' },
+  'resources.stemList': { en: 'DHS STEM List (PDF)', zh: 'DHS STEM清单（PDF）' },
+  'resources.everifySearch': { en: 'E-Verify Employer Search', zh: 'E-Verify雇主搜索' },
+  'resources.i983Form': { en: 'Form I-983 (PDF)', zh: 'I-983表格（PDF）' },
+
+  // Data management
+  'privacy.clearData': { en: 'Clear All Saved Data', zh: '清除所有保存的数据' },
+  'privacy.clearConfirm': { en: 'Are you sure? This will delete all your saved OPT information, employment periods, and settings.', zh: '确定吗？这将删除你所有保存的OPT信息、工作时段和设置。' },
+  'privacy.cleared': { en: 'All data cleared.', zh: '所有数据已清除。' },
+
+  // Wizard result next steps
+  'wizard.nextSteps': { en: 'Helpful tools', zh: '有用的工具' },
+
+  // STEM next steps
+  'stem.nextSteps': { en: 'Next steps', zh: '下一步' },
+  'stem.nextStep1': { en: 'Check your employer\'s E-Verify status', zh: '检查雇主的E-Verify状态' },
+  'stem.nextStep2': { en: 'Set up your timeline and deadlines', zh: '设置你的时间线和截止日期' },
+  'stem.nextStep3': { en: 'Review the I-983 form guide', zh: '查看I-983表格指南' },
 };
 
 function getSavedLang(): Lang {

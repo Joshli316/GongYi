@@ -1,7 +1,8 @@
 import { t } from '../i18n';
 import { renderDisclaimerBanner } from '../app';
-import { getReportingState } from '../utils/storage';
+import { getReportingState, clearAllData } from '../utils/storage';
 import { calculateFromStorage, getStatusClass, renderProgressRing } from '../utils/unemployment-calc';
+import { LINK_USCIS_OPT, LINK_SEVP_PORTAL, LINK_STEM_LIST_PDF, LINK_EVERIFY_SEARCH, LINK_I983_FORM } from '../data/rules';
 
 interface CardInfo {
   route: string;
@@ -55,10 +56,43 @@ export function renderDashboard(container: HTMLElement): void {
     { route: 'reporting', titleKey: 'card.reporting.title', descKey: 'card.reporting.desc', icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="5" width="6" height="6" rx="1"/><path d="m3 17 2 2 4-4"/><path d="M13 6h8"/><path d="M13 12h8"/><path d="M13 18h8"/></svg>', statusHtml: checkedCount > 0 ? `<span class="status-pill status-pill-${checkedCount >= totalReportItems ? 'safe' : 'warn'}">${t('reporting.completedOf', { done: checkedCount, total: totalReportItems })}</span>` : undefined },
     { route: 'i983', titleKey: 'card.i983.title', descKey: 'card.i983.desc', icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z"/><path d="M14 2v4a2 2 0 0 0 2 2h4"/><path d="M10 9H8"/><path d="M16 13H8"/><path d="M16 17H8"/></svg>' },
     { route: 'calendar', titleKey: 'card.calendar.title', descKey: 'card.calendar.desc', icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 2v4"/><path d="M16 2v4"/><rect width="18" height="18" x="3" y="4" rx="2"/><path d="M3 10h18"/><path d="M10 14h4"/><path d="M12 12v4"/></svg>' },
-    { route: '#', titleKey: 'card.resources.title', descKey: 'card.resources.desc', icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>' },
-    { route: '#', titleKey: 'card.privacy.title', descKey: 'card.privacy.desc', icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>' },
-    { route: '#', titleKey: 'card.about.title', descKey: 'card.about.desc', icon: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg>' },
   ];
+
+  // Special cards rendered separately (not linked)
+  const resourcesHtml = `
+    <div class="card status-border-neutral" style="display:flex;flex-direction:column;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <span style="color:var(--color-text-tertiary);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg></span>
+        <span style="font-size:var(--text-label);font-weight:600;">${t('card.resources.title')}</span>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;flex:1;">
+        <a href="${LINK_USCIS_OPT}" target="_blank" rel="noopener noreferrer" style="font-size:0.8125rem;color:var(--color-primary);">${t('resources.uscis')} &rarr;</a>
+        <a href="${LINK_SEVP_PORTAL}" target="_blank" rel="noopener noreferrer" style="font-size:0.8125rem;color:var(--color-primary);">${t('resources.sevpPortal')} &rarr;</a>
+        <a href="${LINK_STEM_LIST_PDF}" target="_blank" rel="noopener noreferrer" style="font-size:0.8125rem;color:var(--color-primary);">${t('resources.stemList')} &rarr;</a>
+        <a href="${LINK_EVERIFY_SEARCH}" target="_blank" rel="noopener noreferrer" style="font-size:0.8125rem;color:var(--color-primary);">${t('resources.everifySearch')} &rarr;</a>
+        <a href="${LINK_I983_FORM}" target="_blank" rel="noopener noreferrer" style="font-size:0.8125rem;color:var(--color-primary);">${t('resources.i983Form')} &rarr;</a>
+      </div>
+    </div>`;
+
+  const privacyHtml = `
+    <div class="card status-border-neutral" style="display:flex;flex-direction:column;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <span style="color:var(--color-text-tertiary);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg></span>
+        <span style="font-size:var(--text-label);font-weight:600;">${t('card.privacy.title')}</span>
+      </div>
+      <p style="font-size:0.875rem;color:var(--color-text-secondary);line-height:1.5;flex:1;">${t('card.privacy.desc')}</p>
+      <button id="clear-data-btn" class="btn-secondary" style="margin-top:8px;font-size:0.8125rem;min-height:36px;padding:6px 12px;align-self:flex-start;">${t('privacy.clearData')}</button>
+    </div>`;
+
+  const aboutHtml = `
+    <div class="card status-border-neutral" style="display:flex;flex-direction:column;">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+        <span style="color:var(--color-text-tertiary);"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="M12 16v-4"/><path d="M12 8h.01"/></svg></span>
+        <span style="font-size:var(--text-label);font-weight:600;">${t('card.about.title')}</span>
+      </div>
+      <p style="font-size:0.875rem;color:var(--color-text-secondary);line-height:1.5;flex:1;">${t('about.description')}</p>
+      <p style="font-size:0.75rem;color:var(--color-text-tertiary);margin-top:4px;">${t('about.source')}</p>
+    </div>`;
 
   const cardsHtml = cards.map(c => `
     <a href="#${c.route}" class="card status-border-neutral" style="cursor:pointer;text-decoration:none;color:inherit;display:flex;flex-direction:column;">
@@ -68,8 +102,7 @@ export function renderDashboard(container: HTMLElement): void {
       </div>
       <p style="font-size:0.875rem;color:var(--color-text-secondary);line-height:1.5;flex:1;">${t(c.descKey)}</p>
       ${c.statusHtml ? `<div style="margin-top:8px;">${c.statusHtml}</div>` : ''}
-    </a>
-  `).join('');
+    </a>`).join('');
 
   container.innerHTML = `
     <div style="margin-bottom:24px;">
@@ -78,8 +111,20 @@ export function renderDashboard(container: HTMLElement): void {
     <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:16px;">
       ${heroHtml}
       ${cardsHtml}
+      ${resourcesHtml}
+      ${privacyHtml}
+      ${aboutHtml}
     </div>
   `;
+
+  // Clear data button handler
+  document.getElementById('clear-data-btn')?.addEventListener('click', () => {
+    if (confirm(t('privacy.clearConfirm'))) {
+      clearAllData();
+      window.location.hash = 'dashboard';
+      window.location.reload();
+    }
+  });
 
   // Responsive grid via media query adjustments
   const grid = container.querySelector('div[style*="grid-template-columns"]') as HTMLElement;

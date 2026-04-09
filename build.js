@@ -4,8 +4,15 @@ const fs = require('fs');
 const path = require('path');
 
 async function build() {
+  // Clean dist/
+  if (fs.existsSync('dist')) {
+    fs.rmSync('dist', { recursive: true });
+  }
+  fs.mkdirSync('dist', { recursive: true });
+
   // Build Tailwind CSS
-  const minifyFlag = process.env.NODE_ENV === 'production' ? '--minify' : '';
+  const isDev = process.env.NODE_ENV === 'development';
+  const minifyFlag = isDev ? '' : '--minify';
   execSync(`npx @tailwindcss/cli -i src/styles/main.css -o dist/styles/tailwind.css ${minifyFlag}`, { stdio: 'inherit' });
 
   // Bundle TypeScript
@@ -17,7 +24,7 @@ async function build() {
     splitting: true,
     target: 'es2020',
     sourcemap: true,
-    minify: process.env.NODE_ENV === 'production',
+    minify: !isDev,
   });
 
   // Copy static files to dist

@@ -83,7 +83,7 @@
   --color-border-strong: #475569;
   --color-text-primary: #F1F5F9;
   --color-text-secondary: #CBD5E1;
-  --color-text-tertiary: #64748B;
+  --color-text-tertiary: #7C8DA4;
   --color-primary-bg: #1E3A5F;
 }
 
@@ -322,4 +322,12 @@ body {
 /* Responsive */
 @media (min-width: 640px) {
   .card { padding: 24px; }
+}
+
+/* Print */
+@media print {
+  #top-nav, #tool-nav, .skip-link, .btn-primary, .btn-secondary, .disclaimer-banner { display: none !important; }
+  body { background: white; color: black; }
+  .card { box-shadow: none; border: 1px solid #ccc; break-inside: avoid; }
+  #content { max-width: 100%; padding: 0; }
 }

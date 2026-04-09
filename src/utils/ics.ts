@@ -17,6 +17,10 @@ function formatICSDate(date: Date): string {
   return `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}`;
 }
 
+function formatICSDateTime(date: Date): string {
+  return `${date.getFullYear()}${pad(date.getMonth() + 1)}${pad(date.getDate())}T${pad(date.getHours())}${pad(date.getMinutes())}${pad(date.getSeconds())}Z`;
+}
+
 function escapeICS(text: string): string {
   return text.replace(/\\/g, '\\\\').replace(/;/g, '\\;').replace(/,/g, '\\,').replace(/\n/g, '\\n');
 }
@@ -36,6 +40,7 @@ function createVEVENT(event: ICSEvent): string {
 
   let vevent = `BEGIN:VEVENT
 UID:${generateUID()}
+DTSTAMP:${formatICSDateTime(new Date())}
 DTSTART;VALUE=DATE:${dateStr}
 DTEND;VALUE=DATE:${endStr}
 SUMMARY:${escapeICS(title)}

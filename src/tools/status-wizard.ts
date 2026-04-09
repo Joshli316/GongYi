@@ -136,7 +136,15 @@ export function renderStatusWizard(container: HTMLElement): void {
         <p style="font-size:0.875rem;color:var(--color-text-secondary);margin-bottom:16px;">${t(descKey)}</p>
         ${issues.length > 0 ? `<div style="display:flex;flex-direction:column;gap:8px;">${issuesHtml}</div>` : ''}
       </div>
-      <button id="wizard-restart" class="btn-secondary">${t('wizard.restart')}</button>
+      <div class="card" style="margin-top:16px;">
+        <div style="font-size:var(--text-label);font-weight:600;margin-bottom:8px;">${t('wizard.nextSteps')}</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <a href="#unemployment" style="font-size:0.8125rem;color:var(--color-primary);">${t('card.unemployment.title')} &rarr;</a>
+          <a href="#reporting" style="font-size:0.8125rem;color:var(--color-primary);">${t('card.reporting.title')} &rarr;</a>
+          <a href="#everify" style="font-size:0.8125rem;color:var(--color-primary);">${t('card.everify.title')} &rarr;</a>
+        </div>
+      </div>
+      <button id="wizard-restart" class="btn-secondary" style="margin-top:12px;">${t('wizard.restart')}</button>
       <div id="wizard-disclaimer" style="margin-top:32px;"></div>
     `;
 

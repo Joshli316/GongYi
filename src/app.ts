@@ -63,9 +63,20 @@ function renderContent(): void {
   if (!content) return;
   const route = getRoute();
   content.innerHTML = '';
+
+  // Update document title per route
+  const routeTitle = t(`nav.${route === 'stem-check' ? 'stemCheck' : route === 'status-wizard' ? 'statusWizard' : route}`);
+  document.title = route === 'dashboard'
+    ? `GongYi 工易 — ${t('app.tagline')}`
+    : `${routeTitle} — GongYi 工易`;
+
   const renderer = routeRenderers[route];
   if (renderer) {
-    renderer(content);
+    try {
+      renderer(content);
+    } catch (err) {
+      content.innerHTML = `<div class="card status-border-critical" style="margin-top:24px;"><p style="color:var(--color-status-critical);font-weight:600;">${t('error.render')}</p><button class="btn-primary" style="margin-top:12px;" onclick="location.hash='dashboard';location.reload();">${t('error.goHome')}</button></div>`;
+    }
   }
 }
 

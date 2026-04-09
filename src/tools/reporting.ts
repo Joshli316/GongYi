@@ -90,7 +90,7 @@ export function renderReporting(container: HTMLElement): void {
 
       ${isStem ? `
         <div style="margin-bottom:20px;">
-          <label style="font-size:var(--text-label);color:var(--color-text-secondary);display:block;margin-bottom:4px;">${t('reporting.stemStartDate')}</label>
+          <label for="rpt-stem-start" style="font-size:var(--text-label);color:var(--color-text-secondary);display:block;margin-bottom:4px;">${t('reporting.stemStartDate')}</label>
           <input type="date" id="rpt-stem-start" class="form-input" value="${state.stemStartDate || ''}" style="max-width:220px;">
         </div>
       ` : ''}

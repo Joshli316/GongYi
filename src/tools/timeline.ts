@@ -102,7 +102,7 @@ export function renderTimeline(container: HTMLElement): void {
           </select>
         </div>
         <div id="tl-stem-fields" style="display:${setup?.optType === 'stem' ? 'block' : 'none'};">
-          <label style="font-size:var(--text-label);color:var(--color-text-secondary);display:block;margin-bottom:4px;">${t('timeline.stemStart')}</label>
+          <label for="tl-stem-start" style="font-size:var(--text-label);color:var(--color-text-secondary);display:block;margin-bottom:4px;">${t('timeline.stemStart')}</label>
           <input type="date" id="tl-stem-start" class="form-input" value="${setup?.stemStart || ''}">
         </div>
         <div>
@@ -112,7 +112,7 @@ export function renderTimeline(container: HTMLElement): void {
           </label>
         </div>
         <div id="tl-h1b-date-wrap" style="display:${setup?.h1bFiled ? 'block' : 'none'};">
-          <label style="font-size:var(--text-label);color:var(--color-text-secondary);display:block;margin-bottom:4px;">${t('timeline.h1bDate')}</label>
+          <label for="tl-h1b-date" style="font-size:var(--text-label);color:var(--color-text-secondary);display:block;margin-bottom:4px;">${t('timeline.h1bDate')}</label>
           <input type="date" id="tl-h1b-date" class="form-input" value="${setup?.h1bDate || ''}">
         </div>
         <button id="tl-calc" class="btn-primary" style="align-self:flex-start;">${t('timeline.calculate')}</button>

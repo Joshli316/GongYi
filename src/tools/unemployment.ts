@@ -15,7 +15,7 @@ export function renderUnemployment(container: HTMLElement): void {
       ${t('common.back')}
     </a>
     <h1 style="font-size:var(--text-page-title);font-weight:700;margin-bottom:24px;">${t('unemployment.title')}</h1>
-    <div id="unemp-display"></div>
+    <div id="unemp-display" aria-live="polite"></div>
     <div id="unemp-setup" class="card" style="margin-bottom:24px;"></div>
     <div id="unemp-periods" style="margin-bottom:24px;"></div>
     <div id="unemp-rules" style="margin-bottom:24px;"></div>
@@ -145,11 +145,11 @@ function renderEmploymentList(periods: EmploymentPeriod[]): void {
         <input type="text" id="new-employer" class="form-input" placeholder="${t('unemployment.employer')}">
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
           <div>
-            <label style="font-size:0.75rem;color:var(--color-text-tertiary);">${t('unemployment.startDate')}</label>
+            <label for="new-start" style="font-size:0.75rem;color:var(--color-text-tertiary);">${t('unemployment.startDate')}</label>
             <input type="date" id="new-start" class="form-input">
           </div>
           <div>
-            <label style="font-size:0.75rem;color:var(--color-text-tertiary);">${t('unemployment.endDate')}</label>
+            <label for="new-end" style="font-size:0.75rem;color:var(--color-text-tertiary);">${t('unemployment.endDate')}</label>
             <input type="date" id="new-end" class="form-input">
           </div>
         </div>
@@ -158,11 +158,11 @@ function renderEmploymentList(periods: EmploymentPeriod[]): void {
         </label>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
           <div>
-            <label style="font-size:0.75rem;color:var(--color-text-tertiary);">${t('unemployment.hoursPerWeek')}</label>
-            <input type="number" id="new-hours" class="form-input" min="1" max="80" value="40">
+            <label for="new-hours" style="font-size:0.75rem;color:var(--color-text-tertiary);">${t('unemployment.hoursPerWeek')}</label>
+            <input type="number" id="new-hours" class="form-input" min="1" max="80" value="40" inputmode="numeric">
           </div>
           <div>
-            <label style="font-size:0.75rem;color:var(--color-text-tertiary);">${t('unemployment.relatedToField')}</label>
+            <label for="new-related" style="font-size:0.75rem;color:var(--color-text-tertiary);">${t('unemployment.relatedToField')}</label>
             <select id="new-related" class="form-input">
               <option value="yes">${t('common.yes')}</option>
               <option value="no">${t('common.no')}</option>

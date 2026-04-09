@@ -1,4 +1,4 @@
-import { t } from '../i18n';
+import { t, getLang } from '../i18n';
 import { renderDisclaimerBanner } from '../app';
 import { getTimelineSetup, getOPTSetup } from '../utils/storage';
 import { addDays, formatDate } from '../utils/dates';
@@ -137,10 +137,11 @@ export function renderCalendar(container: HTMLElement): void {
       </div>
     `;
   } else {
+    const isZh = getLang() === 'zh';
     const eventsHtml = events.map((e, i) => `
       <div class="card" style="margin-bottom:8px;display:flex;align-items:center;justify-content:space-between;">
         <div>
-          <div style="font-weight:600;font-size:0.875rem;">${e.title}</div>
+          <div style="font-weight:600;font-size:0.875rem;">${isZh ? e.titleZh : e.title}</div>
           <div style="font-family:var(--font-mono);font-size:var(--text-mono);color:var(--color-text-tertiary);" class="tabular-nums">${formatDate(e.date)}</div>
         </div>
         <button class="btn-secondary download-single" data-index="${i}" style="padding:6px 12px;min-height:36px;font-size:0.8125rem;">

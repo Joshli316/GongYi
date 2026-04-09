@@ -164,6 +164,14 @@ export function renderStemCheck(container: HTMLElement): void {
         <div style="font-weight:600;font-size:var(--text-section);">${match.code} — ${match.title}</div>
         <div style="font-size:var(--text-label);color:var(--color-text-tertiary);margin-top:4px;">Series ${match.series}</div>
       </div>
+      <div style="margin-top:12px;">
+        <div style="font-size:var(--text-label);font-weight:600;color:var(--color-text-secondary);margin-bottom:8px;">${t('stem.nextSteps')}</div>
+        <div style="display:flex;flex-direction:column;gap:6px;">
+          <a href="#everify" style="font-size:0.8125rem;color:var(--color-primary);">${t('stem.nextStep1')} &rarr;</a>
+          <a href="#timeline" style="font-size:0.8125rem;color:var(--color-primary);">${t('stem.nextStep2')} &rarr;</a>
+          <a href="#i983" style="font-size:0.8125rem;color:var(--color-primary);">${t('stem.nextStep3')} &rarr;</a>
+        </div>
+      </div>
     `;
     showAdditionalChecks();
   }

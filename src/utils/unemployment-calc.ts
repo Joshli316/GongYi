@@ -81,7 +81,8 @@ export function renderProgressRing(used: number, limit: number, size: number = 8
   const status = getStatusClass(used, limit);
   const color = status === 'safe' ? 'var(--color-status-safe)' : status === 'warn' ? 'var(--color-status-warn)' : 'var(--color-status-critical)';
 
-  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="transform:rotate(-90deg)">
+  const remaining = Math.max(0, limit - used);
+  return `<svg width="${size}" height="${size}" viewBox="0 0 ${size} ${size}" style="transform:rotate(-90deg)" role="img" aria-label="${used} of ${limit} unemployment days used, ${remaining} remaining">
     <circle cx="${size/2}" cy="${size/2}" r="${radius}" fill="none" stroke="var(--color-border)" stroke-width="${size > 100 ? 8 : 6}"/>
     <circle cx="${size/2}" cy="${size/2}" r="${radius}" fill="none" stroke="${color}" stroke-width="${size > 100 ? 8 : 6}" stroke-linecap="round" stroke-dasharray="${circumference}" stroke-dashoffset="${offset}" style="transition:stroke-dashoffset 500ms ease-out"/>
   </svg>`;
