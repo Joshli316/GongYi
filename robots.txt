@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://gongyi.pages.dev/sitemap.xml
+Sitemap: https://gongyi-opt.pages.dev/sitemap.xml
