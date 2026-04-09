@@ -84,6 +84,66 @@ describe('calculateUnemployment', () => {
     expect(result.remaining).toBe(0);
     expect(result.used).toBe(365); // daysBetween floor
   });
+
+  it('handles multiple non-overlapping gaps', () => {
+    const setup = makeSetup('standard', '2024-01-01', '2024-04-01'); // 91 days
+    const periods = [
+      makePeriod('2024-01-11', '2024-01-31'), // 20 days employed
+      makePeriod('2024-02-15', '2024-03-15'), // 29 days employed
+    ];
+    // total=91, employed=49, used=42
+    const result = calculateUnemployment(setup, periods);
+    expect(result.used).toBe(42);
+    expect(result.remaining).toBe(48);
+  });
+
+  it('handles exactly 20 hours/week as qualifying', () => {
+    const setup = makeSetup('standard', '2024-01-01', '2024-01-31');
+    const periods = [makePeriod('2024-01-01', '2024-01-31', 20)]; // exactly 20
+    const result = calculateUnemployment(setup, periods);
+    expect(result.used).toBe(0);
+  });
+
+  it('handles exactly 19 hours/week as non-qualifying', () => {
+    const setup = makeSetup('standard', '2024-01-01', '2024-01-31');
+    const periods = [makePeriod('2024-01-01', '2024-01-31', 19)];
+    const result = calculateUnemployment(setup, periods);
+    expect(result.used).toBe(30);
+  });
+
+  it('handles mixed qualifying and non-qualifying periods', () => {
+    const setup = makeSetup('standard', '2024-01-01', '2024-02-01'); // 31 days
+    const periods = [
+      makePeriod('2024-01-01', '2024-01-15', 40, true),  // qualifying: 14 days
+      makePeriod('2024-01-15', '2024-02-01', 10, true),  // non-qualifying (<20hrs)
+    ];
+    const result = calculateUnemployment(setup, periods);
+    expect(result.used).toBe(17);
+  });
+
+  it('STEM limit carries over initial OPT days correctly', () => {
+    // Jan 1 to Jul 19 = daysBetween gives 200, but our func uses floor so 199
+    const setup = makeSetup('stem', '2024-01-01', '2024-07-20');
+    const result = calculateUnemployment(setup, []);
+    expect(result.used).toBe(200);
+    expect(result.limit).toBe(150);
+    expect(result.remaining).toBe(0);
+  });
+
+  it('handles employment starting before EAD', () => {
+    const setup = makeSetup('standard', '2024-03-01', '2024-04-01'); // 31 days
+    const periods = [makePeriod('2024-01-01', '2024-03-15')]; // started way before EAD
+    // Clamped to Mar 1-15 = 14 employed, 17 unemployed
+    const result = calculateUnemployment(setup, periods);
+    expect(result.used).toBe(17);
+  });
+
+  it('handles single-day EAD window', () => {
+    const setup = makeSetup('standard', '2024-01-01', '2024-01-01');
+    const result = calculateUnemployment(setup, []);
+    expect(result.used).toBe(0); // daysBetween same day = 0
+    expect(result.remaining).toBe(90);
+  });
 });
 
 describe('getStatusClass', () => {

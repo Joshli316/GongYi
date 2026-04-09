@@ -14,8 +14,8 @@ export function renderStemCheck(container: HTMLElement): void {
 
     <div style="position:relative;margin-bottom:24px;">
       <label style="font-size:var(--text-label);color:var(--color-text-secondary);display:block;margin-bottom:4px;">${t('stem.search')}</label>
-      <input type="text" id="cip-search" class="form-input" placeholder="${t('stem.searchPlaceholder')}" autocomplete="off">
-      <div id="cip-dropdown" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:20;max-height:300px;overflow-y:auto;background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-card);box-shadow:var(--shadow-md);margin-top:4px;"></div>
+      <input type="text" id="cip-search" class="form-input" placeholder="${t('stem.searchPlaceholder')}" autocomplete="off" role="combobox" aria-expanded="false" aria-controls="cip-dropdown" aria-autocomplete="list">
+      <div id="cip-dropdown" role="listbox" style="display:none;position:absolute;top:100%;left:0;right:0;z-index:20;max-height:300px;overflow-y:auto;background:var(--color-surface);border:1px solid var(--color-border);border-radius:var(--radius-card);box-shadow:var(--shadow-md);margin-top:4px;"></div>
     </div>
 
     <div id="cip-result" style="margin-bottom:24px;"></div>
@@ -55,13 +55,14 @@ export function renderStemCheck(container: HTMLElement): void {
         return;
       }
 
-      dropdown.innerHTML = matches.map(m => `
-        <div class="cip-option" data-code="${m.code}" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--color-border);transition:background-color 150ms ease-out;">
+      dropdown.innerHTML = matches.map((m, i) => `
+        <div class="cip-option" data-code="${m.code}" role="option" id="cip-opt-${i}" style="padding:10px 14px;cursor:pointer;border-bottom:1px solid var(--color-border);transition:background-color 150ms ease-out;">
           <span style="font-family:var(--font-mono);font-size:var(--text-mono);color:var(--color-primary);">${m.code}</span>
           <span style="margin-left:8px;font-size:0.875rem;color:var(--color-text-secondary);">${m.title}</span>
         </div>
       `).join('');
       dropdown.style.display = 'block';
+      searchInput.setAttribute('aria-expanded', 'true');
 
       dropdown.querySelectorAll('.cip-option').forEach(opt => {
         opt.addEventListener('mouseenter', () => {
@@ -71,31 +72,77 @@ export function renderStemCheck(container: HTMLElement): void {
           (opt as HTMLElement).style.background = '';
         });
         opt.addEventListener('click', () => {
-          const code = (opt as HTMLElement).dataset.code!;
-          const match = STEM_CIP_CODES.find(c => c.code === code)!;
-          searchInput.value = `${match.code} — ${match.title}`;
-          dropdown.style.display = 'none';
-          showResult(match);
+          selectOption(opt as HTMLElement);
         });
       });
     }, 200);
   });
 
-  // Also check typed input directly (for non-dropdown selection)
+  let activeIndex = -1;
+
+  function selectOption(opt: HTMLElement): void {
+    const code = opt.dataset.code!;
+    const match = STEM_CIP_CODES.find(c => c.code === code)!;
+    searchInput.value = `${match.code} — ${match.title}`;
+    closeDropdown();
+    showResult(match);
+  }
+
+  function closeDropdown(): void {
+    dropdown.style.display = 'none';
+    searchInput.setAttribute('aria-expanded', 'false');
+    activeIndex = -1;
+    highlightOption();
+  }
+
+  function highlightOption(): void {
+    const opts = dropdown.querySelectorAll('.cip-option');
+    opts.forEach((o, i) => {
+      (o as HTMLElement).style.background = i === activeIndex ? 'var(--color-surface-alt)' : '';
+    });
+    if (activeIndex >= 0 && opts[activeIndex]) {
+      (opts[activeIndex] as HTMLElement).scrollIntoView({ block: 'nearest' });
+      searchInput.setAttribute('aria-activedescendant', `cip-opt-${activeIndex}`);
+    } else {
+      searchInput.removeAttribute('aria-activedescendant');
+    }
+  }
+
   searchInput.addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      const query = searchInput.value.trim().toLowerCase();
-      const exactMatch = STEM_CIP_CODES.find(c => c.code === query || c.code.replace('.', '') === query.replace('.', ''));
-      if (exactMatch) {
-        searchInput.value = `${exactMatch.code} — ${exactMatch.title}`;
-        dropdown.style.display = 'none';
-        showResult(exactMatch);
+    const opts = dropdown.querySelectorAll('.cip-option');
+    const isOpen = dropdown.style.display !== 'none';
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (isOpen && opts.length > 0) {
+        activeIndex = Math.min(activeIndex + 1, opts.length - 1);
+        highlightOption();
+      }
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (isOpen && opts.length > 0) {
+        activeIndex = Math.max(activeIndex - 1, 0);
+        highlightOption();
+      }
+    } else if (e.key === 'Escape') {
+      closeDropdown();
+    } else if (e.key === 'Enter') {
+      e.preventDefault();
+      if (isOpen && activeIndex >= 0 && opts[activeIndex]) {
+        selectOption(opts[activeIndex] as HTMLElement);
       } else {
-        // Show not-eligible result for unrecognized codes
-        const codePattern = /^\d{2}\.\d{4}$/;
-        if (codePattern.test(query)) {
-          showNotEligible(query);
-          dropdown.style.display = 'none';
+        const query = searchInput.value.trim().toLowerCase();
+        const exactMatch = STEM_CIP_CODES.find(c => c.code === query || c.code.replace('.', '') === query.replace('.', ''));
+        if (exactMatch) {
+          searchInput.value = `${exactMatch.code} — ${exactMatch.title}`;
+          closeDropdown();
+          showResult(exactMatch);
+        } else {
+          const codePattern = /^\d{2}\.\d{4}$/;
+          if (codePattern.test(query)) {
+            showNotEligible(query);
+            closeDropdown();
+          }
         }
       }
     }
@@ -104,7 +151,7 @@ export function renderStemCheck(container: HTMLElement): void {
   // Close dropdown on outside click
   document.addEventListener('click', (e) => {
     if (!(e.target as HTMLElement).closest('#cip-search') && !(e.target as HTMLElement).closest('#cip-dropdown')) {
-      dropdown.style.display = 'none';
+      closeDropdown();
     }
   });
 

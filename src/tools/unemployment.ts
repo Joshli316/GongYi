@@ -99,6 +99,10 @@ function renderSetupForm(setup: OPTSetup | null): void {
     const eadStartEl = document.getElementById('ead-start') as HTMLInputElement;
     const eadEndEl = document.getElementById('ead-end') as HTMLInputElement;
     if (!flashInvalid(eadStartEl, eadEndEl)) return;
+    if (eadEndEl.value <= eadStartEl.value) {
+      flashInvalid(eadEndEl);
+      return;
+    }
     const optType = (document.getElementById('opt-type') as HTMLSelectElement).value as 'standard' | 'stem';
     const newSetup: OPTSetup = { optType, eadStart: eadStartEl.value, eadEnd: eadEndEl.value };
     saveOPTSetup(newSetup);
@@ -186,6 +190,10 @@ function renderEmploymentList(periods: EmploymentPeriod[]): void {
     const employer = employerEl.value.trim();
     const startDate = startEl.value;
     const endDate = currentCheckbox.checked ? null : endInput.value || null;
+    if (endDate && endDate <= startDate) {
+      flashInvalid(endInput);
+      return;
+    }
     const hoursPerWeek = parseInt((document.getElementById('new-hours') as HTMLInputElement).value) || 40;
     const relatedToField = (document.getElementById('new-related') as HTMLSelectElement).value === 'yes';
 
