@@ -27,10 +27,15 @@
     <!-- Top nav bar -->
     <header id="top-nav" class="sticky top-0 z-50" style="background:var(--color-surface);border-bottom:1px solid var(--color-border);">
       <div class="max-w-[1120px] mx-auto flex items-center justify-between" style="padding:12px 24px;">
-        <a href="#dashboard" class="flex items-center gap-2 no-underline" style="color:var(--color-text-primary);font-weight:700;font-size:1.125rem;">
-          <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
-          <span>GongYi <span style="font-weight:400;">工易</span></span>
-        </a>
+        <div class="flex items-center gap-3">
+          <a href="https://yi-suite.pages.dev/" style="display:inline-flex;align-items:center;gap:4px;padding:4px 10px;font-size:12px;color:var(--color-text-secondary);border:1px solid var(--color-border);border-radius:9999px;text-decoration:none;" aria-label="Back to Yi 易 — family of tools for international students">
+            <span aria-hidden="true">←</span>&nbsp;Yi 易
+          </a>
+          <a href="#dashboard" class="flex items-center gap-2 no-underline" style="color:var(--color-text-primary);font-weight:700;font-size:1.125rem;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20a8 8 0 1 0 0-16 8 8 0 0 0 0 16Z"/><path d="M12 14a2 2 0 1 0 0-4 2 2 0 0 0 0 4Z"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>
+            <span>GongYi <span style="font-weight:400;">工易</span></span>
+          </a>
+        </div>
         <div class="flex items-center gap-2">
           <button id="lang-toggle" class="nav-pill" aria-label="Switch language" style="padding:6px 12px;">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"/><path d="m4 14 6-6 2-3"/><path d="M2 5h12"/><path d="M7 2h1"/><path d="m22 22-5-10-5 10"/><path d="M14 18h6"/></svg>
